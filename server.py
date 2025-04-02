@@ -336,30 +336,45 @@ def create_prompt(question):
 
 def transcribe_audio(audio_data):
     try:
+        start_time = time.time()
         # Chuyển đổi WebM sang WAV
         audio = AudioSegment.from_file(audio_data, format="webm")
         audio = audio.set_channels(1)
         audio = audio.set_frame_rate(16000)
+        logger.info(f"Chuyển đổi WebM sang WAV: {time.time() - start_time:.3f}s")
         
         # Lưu file WAV tạm thời
+        save_start = time.time()
         temp_wav = "temp_audio.wav"
         audio.export(temp_wav, format="wav")
+        logger.info(f"Lưu file WAV tạm thời: {time.time() - save_start:.3f}s")
         
         # Điều chỉnh nhiễu
+        noise_start = time.time()
         audio = AudioSegment.from_wav(temp_wav)
         audio = audio - 10  # Giảm âm lượng 10dB
+        logger.info(f"Điều chỉnh nhiễu: {time.time() - noise_start:.3f}s")
         
         # Lưu file đã điều chỉnh
+        save_adjusted_start = time.time()
         audio.export(temp_wav, format="wav")
+        logger.info(f"Lưu file đã điều chỉnh: {time.time() - save_adjusted_start:.3f}s")
         
         # Nhận dạng giọng nói
+        recognition_start = time.time()
         recognizer = sr.Recognizer()
         with sr.AudioFile(temp_wav) as source:
             audio_data = recognizer.record(source)
             text = recognizer.recognize_google(audio_data, language="vi-VN")
+        logger.info(f"Nhận dạng giọng nói: {time.time() - recognition_start:.3f}s")
         
         # Xóa file tạm
+        cleanup_start = time.time()
         os.remove(temp_wav)
+        logger.info(f"Xóa file tạm: {time.time() - cleanup_start:.3f}s")
+        
+        total_time = time.time() - start_time
+        logger.info(f"Tổng thời gian xử lý audio: {total_time:.3f}s")
         
         return text
         
@@ -525,6 +540,7 @@ if __name__ == "__main__":
     
     try:
         # Code khởi động server
+        logger.info("Server starting...")
         app.run(host="0.0.0.0", port=5002, debug=True, use_reloader=False)
     except Exception as e:
         logger.error(f"Server failed to start: {str(e)}")
