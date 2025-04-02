@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hệ thống đặt bánh bao</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+            padding: 20px;
+        }
+        .record-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        .btn-record {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            font-size: 18px;
+            margin: 20px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-record.recording {
+            animation: pulse 1.5s infinite;
+        }
+        .result-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .product-item {
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 0 5px 5px 0;
+            transition: all 0.3s ease;
+        }
+        .product-item:hover {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .product-details {
+            margin-top: 10px;
+        }
+        .product-description {
+            font-size: 0.9em;
+            color: #6c757d;
+            padding: 5px 0;
+            border-top: 1px dashed #dee2e6;
+            margin-top: 8px;
+        }
+        .action-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        .action-new { 
+            background-color: #28a745;
+            color: white;
+        }
+        .action-thêm { 
+            background-color: #17a2b8;
+            color: white;
+        }
+        .action-bớt { 
+            background-color: #dc3545;
+            color: white;
+        }
+        .action-xóa { 
+            background-color: #6c757d;
+            color: white;
+        }
+        .status-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .status-new { 
+            background-color: #cff4fc;
+            color: #055160;
+        }
+        .status-updating { 
+            background-color: #fff3cd;
+            color: #664d03;
+        }
+        .status-confirmed { 
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        .order-summary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        .total-amount {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .status-ready {
+            background-color: #28a745;
+        }
+        .status-recording {
+            background-color: #dc3545;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .json-view {
+            background: #252525;
+            color: #ffffff;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-top: 20px;
+        }
+        
+        .order-container {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .order-header {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .order-content {
+            padding: 15px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background-color: #e9ecef;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .quantity-btn:hover {
+            background-color: #dee2e6;
+        }
+
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 4px;
+        }
+
+        .product-item {
+            position: relative;
+        }
+
+        .edit-quantity {
+            position: absolute;
+            right: 15px;
+            bottom: 15px;
+            display: none;
+        }
+
+        .product-item:hover .edit-quantity {
+            display: block;
+        }
+
+        .save-btn {
+            padding: 4px 12px;
+            border-radius: 15px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .save-btn:hover {
+            background-color: #218838;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 4px;
+            color: white;
+            z-index: 1000;
+            animation: slideIn 0.3s, fadeOut 0.3s 2.7s;
+        }
+
+        .toast-success {
+            background-color: #28a745;
+        }
+
+        .toast-error {
+            background-color: #dc3545;
+        }
+
+        .toast-info {
+            background-color: #17a2b8;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .order-summary-box {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .order-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Thêm hiệu ứng disabled cho nút record khi đang xử lý */
+        .recording-disabled {
+            opacity: 0.6;
+            cursor: not-allowed !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Đang xử lý...</div>
+    </div>
+
+    <div class="container py-4">
+        <div class="text-center mb-4">
+            <h1>Đặt bánh bao Thọ Phát thông minh</h1>
+            <p class="lead">Hãy nói đơn hàng của bạn</p>
+        </div>
+
+        <!-- Nút ghi âm -->
+        <div class="text-center mb-4">
+            <button id="recordButton" class="btn btn-primary">
+                Bấm để ghi âm
+            </button>
+        </div>
+
+        <!-- Khu vực hiển thị kết quả -->
+        <div id="result" class="d-none">
+            <!-- Câu nói -->
+            <div class="mb-3">
+                <h5>Câu nói của bạn:</h5>
+                <p id="questionText" class="text-muted"></p>
+            </div>
+
+            <!-- Thông báo -->
+            <div id="messageBox" class="alert alert-info d-none">
+                <i class="fas fa-info-circle"></i>
+                <span id="messageText"></span>
+            </div>
+
+            <!-- Đơn hàng hiện tại -->
+            <div class="order-container">
+                <div class="order-content">
+                    <h5>Đơn hàng hiện tại:</h5>
+                    <div id="productsList"></div>
+
+                    <!-- Tổng kết đơn hàng -->
+                    <div class="order-summary">
+                        <div class="d-flex justify-content-between">
+                            <span>Tổng số sản phẩm:</span>
+                            <strong id="totalItems">0</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <span>Trạng thái:</span>
+                            <strong id="orderStatus">Mới</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <span>Thời gian tạo:</span>
+                            <span id="createdAt">-</span>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <span>Cập nhật lần cuối:</span>
+                            <span id="updatedAt">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JSON View -->
+            <div class="mt-4">
+                <h5>Chi tiết JSON:</h5>
+                <pre id="jsonView" class="json-view"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const recordButton = document.getElementById('recordButton');
+            if (recordButton) {
+                recordButton.addEventListener('click', toggleRecording);
+            }
+        });
+
+        function toggleRecording() {
+            const recordButton = document.getElementById('recordButton');
+            
+            // Nếu đang ghi âm thì dừng lại
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                return;
+            }
+
+            // Reset UI và đơn hàng khi bắt đầu ghi âm mới
+            clearOrderData();
+            document.getElementById('questionText').textContent = '';
+            document.getElementById('productsList').innerHTML = '';
+            document.getElementById('totalItems').textContent = '0';
+            document.getElementById('orderStatus').textContent = 'Chưa có';
+            document.getElementById('createdAt').textContent = '--/--/----';
+            document.getElementById('updatedAt').textContent = '--/--/----';
+            document.getElementById('jsonView').textContent = '';
+
+            // Bắt đầu ghi âm mới
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.start();
+
+                    const audioChunks = [];
+                    mediaRecorder.addEventListener("dataavailable", event => {
+                        audioChunks.push(event.data);
+                    });
+
+                    mediaRecorder.addEventListener("stop", async () => {
+                        showLoading();
+                        recordButton.textContent = 'Đang xử lý...';
+                        recordButton.disabled = true;
+
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        try {
+                const formData = new FormData();
+                            formData.append('audio', audioBlob);
+
+                            const response = await fetch('/transcribe', {
+                                method: 'POST',
+                                body: formData
+                            });
+
+                            const data = await response.json();
+                            
+                            if (data.error) {
+                                hideLoading();
+                            } else if (data.current_order) {
+                                showResult(data);
+                                hideLoading();
+                            }
+                        } catch (error) {
+                            hideLoading();
+                        } finally {
+                            stream.getTracks().forEach(track => track.stop());
+                            resetRecordButton();
+                        }
+                    });
+
+                    recordButton.textContent = 'Nhấn để dừng';
+                    recordButton.classList.add('recording');
+                })
+                .catch(error => {
+                    resetRecordButton();
+                });
+        }
+
+        function showLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'flex';
+            }
+        }
+
+        function hideLoading() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        function resetRecordButton() {
+            const recordButton = document.getElementById('recordButton');
+            recordButton.textContent = 'Bấm để ghi âm';
+            recordButton.classList.remove('recording');
+            recordButton.disabled = false;
+        }
+
+        function clearOrderData() {
+            // Reset tất cả các trường hiển thị đơn hàng
+            document.getElementById('questionText').textContent = '';
+            document.getElementById('productsList').innerHTML = '';
+            document.getElementById('totalItems').textContent = '0';
+            document.getElementById('orderStatus').textContent = 'Chưa có';
+            document.getElementById('createdAt').textContent = '--/--/----';
+            document.getElementById('updatedAt').textContent = '--/--/----';
+            document.getElementById('jsonView').textContent = '';
+        }
+
+        function showResult(data) {
+            // Hiển thị khu vực kết quả
+            document.getElementById('result').classList.remove('d-none');
+
+            // Cập nhật câu nói
+            document.getElementById('questionText').textContent = data.question || '';
+
+            // Cập nhật thông báo
+            const messageBox = document.getElementById('messageBox');
+            const messageText = document.getElementById('messageText');
+            if (data.message) {
+                messageText.textContent = data.message;
+                messageBox.classList.remove('d-none');
+            } else {
+                messageBox.classList.add('d-none');
+            }
+
+            // Cập nhật danh sách sản phẩm
+            const productsList = document.getElementById('productsList');
+            productsList.innerHTML = '';
+
+            if (data.current_order && data.current_order.products.length > 0) {
+                data.current_order.products.forEach(product => {
+                    const productDiv = document.createElement('div');
+                    productDiv.className = 'product-item mb-3 p-3 border rounded';
+                    productDiv.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">${product.name}</h6>
+                                <div class="text-muted small">Mã sản phẩm: ${product.sapCode}</div>
+                                ${product.description ? 
+                                    `<div class="text-muted small mt-1">${product.description}</div>` : 
+                                    ''}
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-primary">${product.quantity}</span>
+                            </div>
+                        </div>
+                    `;
+                    productsList.appendChild(productDiv);
+                });
+
+                // Cập nhật thông tin đơn hàng
+                document.getElementById('totalItems').textContent = data.current_order.total_items;
+                document.getElementById('orderStatus').textContent = data.current_order.order_status;
+                
+                if (data.current_order.created_at) {
+                    document.getElementById('createdAt').textContent = 
+                        new Date(data.current_order.created_at).toLocaleString();
+                }
+                if (data.current_order.updated_at) {
+                    document.getElementById('updatedAt').textContent = 
+                        new Date(data.current_order.updated_at).toLocaleString();
+                }
+
+                // Hiển thị JSON
+                document.getElementById('jsonView').textContent = 
+                    JSON.stringify(data.current_order, null, 2);
+            } else {
+                productsList.innerHTML = '<div class="alert alert-info">Không có sản phẩm trong đơn hàng</div>';
+                document.getElementById('jsonView').textContent = '{}';
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('result').classList.remove('d-none');
+            document.getElementById('messageBox').classList.remove('d-none');
+            document.getElementById('messageText').textContent = `Lỗi: ${message}`;
+        }
+
+        // Cập nhật hàm handleTranscribe
+        async function handleTranscribe(audioBlob) {
+            try {
+                const formData = new FormData();
+                formData.append('audio', audioBlob);
+
+                const response = await fetch('/transcribe', {
+                    method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                if (data.error) {
+                    hideLoading();
+                    resetRecordButton();
+                    return;
+                }
+                
+                // Hiển thị kết quả và ẩn loading
+                await showResult(data);
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                hideLoading();
+                resetRecordButton();
+            }
+        }
+
+    </script>
+</body>
+</html>
