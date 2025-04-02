@@ -26,9 +26,15 @@ def setup_logging():
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
 
-    # Format cho server log
+    # Format cho server log (tổng quan)
     server_formatter = logging.Formatter(
-        '%(asctime)s - %(levelname)s [%(name)s:%(lineno)d] - %(message)s',
+        '%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+
+    # Format cho error log (chi tiết)
+    error_formatter = logging.Formatter(
+        '%(asctime)s\n%(message)s\n',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
 
@@ -37,14 +43,25 @@ def setup_logging():
     server_handler.setFormatter(server_formatter)
     server_handler.setLevel(logging.INFO)
 
+    # Handler cho error log
+    error_handler = logging.FileHandler(f'logsError/error_{current_date}.log', encoding='utf-8')
+    error_handler.setFormatter(error_formatter)
+    error_handler.setLevel(logging.ERROR)
+
     # Console handler
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(server_formatter)
 
-    # Setup root logger
+    # Setup root logger (chỉ cho log tổng quan)
     logger.setLevel(logging.INFO)
     logger.addHandler(server_handler)
     logger.addHandler(console_handler)
+
+    # Setup error logger riêng biệt
+    error_logger = logging.getLogger('error_logger')
+    error_logger.setLevel(logging.ERROR)
+    error_logger.addHandler(error_handler)
+    error_logger.propagate = False  # Không cho phép log lan truyền lên root logger
 
     # Tắt log của các module khác
     logging.getLogger('werkzeug').disabled = True
@@ -53,6 +70,8 @@ def setup_logging():
     logging.getLogger('google').disabled = True
     logging.getLogger('google.generativeai').disabled = True
     logging.getLogger('speech_recognition').disabled = True
+
+    return error_logger  # Trả về error logger để sử dụng
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Cần thiết cho session
@@ -345,8 +364,9 @@ def transcribe_audio(audio_data):
         return text
         
     except Exception as e:
-        logger.error(f"Lỗi khi xử lý audio: {str(e)}")
-        logger.error(traceback.format_exc())
+        error_logger = logging.getLogger('error_logger')
+        error_logger.error(f"Lỗi khi xử lý audio: {str(e)}")
+        error_logger.error(traceback.format_exc())
         raise
 
 @app.route('/')
@@ -383,8 +403,9 @@ def process_with_gemini(text):
         return current_order
             
     except Exception as e:
-        logger.error(f"Lỗi xử lý Gemini: {str(e)}")
-        logger.error(traceback.format_exc())
+        error_logger = logging.getLogger('error_logger')
+        error_logger.error(f"Lỗi xử lý Gemini: {str(e)}")
+        error_logger.error(traceback.format_exc())
         return current_order
 
 @app.route("/transcribe", methods=["POST"])
@@ -395,35 +416,33 @@ def handle_transcribe():
     text = ""
     result = {"error": ""}
     current_time = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
-    response_size = 0  # Initialize response_size
+    response_size = 0
     
     try:
         # Lấy thông tin client
         client_ip = request.remote_addr
         user_agent = request.headers.get('User-Agent', 'Unknown')
         
-        logger.debug(f"Received request from client IP: {client_ip}")
-        
         if "audio" not in request.files:
-            logger.error(f"Không tìm thấy file audio trong request từ client {client_ip}")
+            error_msg = f"Không tìm thấy file audio trong request từ client {client_ip}"
+            logger.error(error_msg)
             return jsonify({"error": "No audio file provided"}), 400
             
         audio_file = request.files["audio"]
         if audio_file.filename == "":
-            logger.error(f"File audio trống từ client {client_ip}")
+            error_msg = f"File audio trống từ client {client_ip}"
+            logger.error(error_msg)
             return jsonify({"error": "No selected file"}), 400
             
         # Xử lý audio
         audio_start_time = time.time()
         text = transcribe_audio(audio_file)
         audio_time = time.time() - audio_start_time
-        logger.debug(f"Audio transcription completed in {audio_time:.3f}s")
         
         # Xử lý text với Gemini
         gemini_start_time = time.time()
         result = process_with_gemini(text)
         gemini_time = time.time() - gemini_start_time
-        logger.debug(f"Gemini processing completed in {gemini_time:.3f}s")
         
         # Tính thời gian xử lý tổng thể
         total_time = time.time() - start_time
@@ -446,7 +465,6 @@ def handle_transcribe():
         # Log theo format mới với thời gian xử lý Audio và Gemini
         log_message = f"{current_time}\t{handle_transcribe.__name__}\t/transcribe\tSUCCESS\tAudio: {audio_time:.3f}s - Gemini: {gemini_time:.3f}s - Tổng: {total_time:.3f}s\t{response_size}\t{user_agent}\t{json.dumps(request_data, ensure_ascii=False)}\tKết quả: {json.dumps(result, ensure_ascii=False)}"
         logger.info(log_message)
-        logger.debug(f"Log message: {log_message}")
         
         return jsonify(response_data)
         
@@ -454,7 +472,7 @@ def handle_transcribe():
         total_time = time.time() - start_time
         error_data = {"error": str(e), "client_ip": client_ip}
         
-        # Log error message
+        # Log error message tổng quan vào server log
         error_msg = (
             f"{current_time}\t"
             f"handle_transcribe\t/transcribe\tERROR\t"
@@ -465,10 +483,12 @@ def handle_transcribe():
             f"Kết quả: {json.dumps(result)}"
         )
         logger.error(error_msg)
-        logger.error(f"Exception details: {str(e)}")
         
-        # Log stack trace
-        logger.exception("Lỗi khi xử lý audio:")
+        # Log chi tiết lỗi vào error log
+        error_logger = logging.getLogger('error_logger')
+        error_logger.error(f"Chi tiết lỗi: {str(e)}")
+        error_logger.error("Stack trace:")
+        error_logger.error(traceback.format_exc())
         
         return jsonify(error_data), 500
 
@@ -501,7 +521,7 @@ def reset_order():
 
 if __name__ == "__main__":
     # Khởi tạo logging trước
-    setup_logging()
+    error_logger = setup_logging()
     
     try:
         # Code khởi động server
