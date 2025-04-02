@@ -28,22 +28,14 @@ def setup_logging():
 
     # Format cho server log
     server_formatter = logging.Formatter(
-        '%(asctime)s,%(msecs)03d - %(levelname)s [%(hostname)s@%(name)s:%(lineno)d] - %(message)s',
+        '%(asctime)s - %(levelname)s [%(name)s:%(lineno)d] - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
-
-    # Format cho error log
-    error_formatter = logging.Formatter('%(asctime)s\n%(message)s')
 
     # Handler cho server log
     server_handler = logging.FileHandler(f'logs/server_{current_date}.log', encoding='utf-8')
     server_handler.setFormatter(server_formatter)
     server_handler.setLevel(logging.INFO)
-
-    # Handler cho error log
-    error_handler = logging.FileHandler(f'logsError/error_{current_date}.log', encoding='utf-8')
-    error_handler.setLevel(logging.ERROR)
-    error_handler.setFormatter(error_formatter)
 
     # Console handler
     console_handler = logging.StreamHandler()
@@ -52,8 +44,15 @@ def setup_logging():
     # Setup root logger
     logger.setLevel(logging.INFO)
     logger.addHandler(server_handler)
-    logger.addHandler(error_handler)
     logger.addHandler(console_handler)
+
+    # Tắt log của các module khác
+    logging.getLogger('werkzeug').disabled = True
+    logging.getLogger('flask').disabled = True
+    logging.getLogger('urllib3').disabled = True
+    logging.getLogger('google').disabled = True
+    logging.getLogger('google.generativeai').disabled = True
+    logging.getLogger('speech_recognition').disabled = True
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Cần thiết cho session
@@ -396,11 +395,14 @@ def handle_transcribe():
     text = ""
     result = {"error": ""}
     current_time = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
+    response_size = 0  # Initialize response_size
     
     try:
         # Lấy thông tin client
         client_ip = request.remote_addr
         user_agent = request.headers.get('User-Agent', 'Unknown')
+        
+        logger.debug(f"Received request from client IP: {client_ip}")
         
         if "audio" not in request.files:
             logger.error(f"Không tìm thấy file audio trong request từ client {client_ip}")
@@ -415,11 +417,13 @@ def handle_transcribe():
         audio_start_time = time.time()
         text = transcribe_audio(audio_file)
         audio_time = time.time() - audio_start_time
+        logger.debug(f"Audio transcription completed in {audio_time:.3f}s")
         
         # Xử lý text với Gemini
         gemini_start_time = time.time()
         result = process_with_gemini(text)
         gemini_time = time.time() - gemini_start_time
+        logger.debug(f"Gemini processing completed in {gemini_time:.3f}s")
         
         # Tính thời gian xử lý tổng thể
         total_time = time.time() - start_time
@@ -442,6 +446,7 @@ def handle_transcribe():
         # Log theo format mới với thời gian xử lý Audio và Gemini
         log_message = f"{current_time}\t{handle_transcribe.__name__}\t/transcribe\tSUCCESS\tAudio: {audio_time:.3f}s - Gemini: {gemini_time:.3f}s - Tổng: {total_time:.3f}s\t{response_size}\t{user_agent}\t{json.dumps(request_data, ensure_ascii=False)}\tKết quả: {json.dumps(result, ensure_ascii=False)}"
         logger.info(log_message)
+        logger.debug(f"Log message: {log_message}")
         
         return jsonify(response_data)
         
@@ -460,6 +465,7 @@ def handle_transcribe():
             f"Kết quả: {json.dumps(result)}"
         )
         logger.error(error_msg)
+        logger.error(f"Exception details: {str(e)}")
         
         # Log stack trace
         logger.exception("Lỗi khi xử lý audio:")
@@ -498,19 +504,8 @@ if __name__ == "__main__":
     setup_logging()
     
     try:
-        logger.info("Server starting...")
         # Code khởi động server
-        app.run(host="0.0.0.0", port=5001, debug=True)
+        app.run(host="0.0.0.0", port=5002, debug=True, use_reloader=False)
     except Exception as e:
-        # Log lỗi khi khởi động server
-        logger.error(
-            f'{datetime.now().strftime("%d-%m-%Y %H:%M:%S")}\t'
-            f'server_startup\tERROR\t'
-            f'Server failed to start\t'
-            f'{str(e)}'
-        )
-        # Log stack trace
-        logger.error(
-            f'Traceback (most recent call last):\n{traceback.format_exc()}',
-            extra={'stack_info': True}
-        )
+        logger.error(f"Server failed to start: {str(e)}")
+        logger.error(traceback.format_exc())
