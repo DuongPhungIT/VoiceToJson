@@ -182,6 +182,22 @@ def create_prompt(question):
           - "kosan" = "cua xanh"
           - "cục" = "cuộn"
           - "mini" = "cua xanh"
+          
+       c) Xử lý các trường hợp đặc biệt:
+            - Nếu khách nói "bánh bao" -> tìm sản phẩm bánh bao
+            - Nếu khách nói "bánh giò" -> tìm sản phẩm bánh giò
+            - Nếu khách nói "cảo" -> tìm sản phẩm há cảo
+            - Nếu khách nói "chay" -> tìm sản phẩm nhân chay
+            - Nếu khách nói "sữa tươi" -> tìm sản phẩm có sữa tươi
+            - Nếu khách nói "thập cẩm" -> tìm sản phẩm thập cẩm
+            - Nếu khách nói "xúc xích" -> tìm sản phẩm xúc xích
+            - Nếu khách nói "phô mai" -> tìm sản phẩm phô mai
+            - Nếu khách nói "hoa hồng" -> tìm sản phẩm hoa hồng
+            - Nếu khách nói "tôm" -> tìm sản phẩm tôm
+            - Nếu khách nói "xíu mại" -> tìm sản phẩm xíu mại
+            - Nếu khách nói "hamburger" -> tìm sản phẩm hamburger
+            - Nếu khách nói "đào" -> tìm sản phẩm bánh trái đào
+
 
     FORMAT KẾT QUẢ:
     {{
