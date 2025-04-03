@@ -1,0 +1,110 @@
+2025-04-04 05:37:14
+Lỗi khi xử lý audio: 
+
+2025-04-04 05:37:14
+Traceback (most recent call last):
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 249, in transcribe_audio
+    text = recognizer.recognize_google(audio_data, language="vi-VN")
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 262, in recognize_legacy
+    return output_parser.parse(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 134, in parse
+    actual_result = self.convert_to_result(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 183, in convert_to_result
+    raise UnknownValueError()
+speech_recognition.exceptions.UnknownValueError
+
+
+2025-04-04 05:37:14
+Chi tiết lỗi: 
+
+2025-04-04 05:37:14
+Stack trace:
+
+2025-04-04 05:37:14
+Traceback (most recent call last):
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 336, in handle_transcribe
+    text = transcribe_audio(audio_file)
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 249, in transcribe_audio
+    text = recognizer.recognize_google(audio_data, language="vi-VN")
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 262, in recognize_legacy
+    return output_parser.parse(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 134, in parse
+    actual_result = self.convert_to_result(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 183, in convert_to_result
+    raise UnknownValueError()
+speech_recognition.exceptions.UnknownValueError
+
+
+2025-04-04 05:43:23
+Lỗi khi xử lý audio: 
+
+2025-04-04 05:43:23
+Traceback (most recent call last):
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 249, in transcribe_audio
+    with sr.AudioFile(temp_wav) as source:
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 262, in recognize_legacy
+    return output_parser.parse(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 134, in parse
+    actual_result = self.convert_to_result(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 183, in convert_to_result
+    raise UnknownValueError()
+speech_recognition.exceptions.UnknownValueError
+
+
+2025-04-04 05:43:23
+Chi tiết lỗi: 
+
+2025-04-04 05:43:23
+Stack trace:
+
+2025-04-04 05:43:23
+Traceback (most recent call last):
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 336, in handle_transcribe
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 249, in transcribe_audio
+    with sr.AudioFile(temp_wav) as source:
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 262, in recognize_legacy
+    return output_parser.parse(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 134, in parse
+    actual_result = self.convert_to_result(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 183, in convert_to_result
+    raise UnknownValueError()
+speech_recognition.exceptions.UnknownValueError
+
+
+2025-04-04 05:45:14
+Lỗi khi xử lý audio: 
+
+2025-04-04 05:45:14
+Traceback (most recent call last):
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 249, in transcribe_audio
+    text = recognizer.recognize_google(audio_data, language="vi-VN")
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 262, in recognize_legacy
+    return output_parser.parse(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 134, in parse
+    actual_result = self.convert_to_result(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 183, in convert_to_result
+    raise UnknownValueError()
+speech_recognition.exceptions.UnknownValueError
+
+
+2025-04-04 05:45:14
+Chi tiết lỗi: 
+
+2025-04-04 05:45:14
+Stack trace:
+
+2025-04-04 05:45:14
+Traceback (most recent call last):
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 336, in handle_transcribe
+    # Xử lý audio
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 249, in transcribe_audio
+    text = recognizer.recognize_google(audio_data, language="vi-VN")
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 262, in recognize_legacy
+    return output_parser.parse(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 134, in parse
+    actual_result = self.convert_to_result(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 183, in convert_to_result
+    raise UnknownValueError()
+speech_recognition.exceptions.UnknownValueError
+
+

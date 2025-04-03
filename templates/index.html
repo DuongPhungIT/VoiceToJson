@@ -590,6 +590,7 @@
                 // Hiển thị kết quả và ẩn loading
                 await showResult(data);
             } catch (error) {
+                hideLoading();
                 console.error('Error:', error);
             } finally {
                 hideLoading();

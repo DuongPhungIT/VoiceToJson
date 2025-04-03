@@ -89,6 +89,7 @@ except Exception as e:
 # Khởi tạo current_order là một dict toàn cục
 current_order = {
     "products": [],
+    "productsError": [],
     "order_status": "new",
     "total_items": 0,
     "created_at": None,
@@ -108,78 +109,65 @@ def create_prompt(question):
     return f"""
     Câu hỏi: {question}
     
-    Bạn là một hệ thống nhận đơn hàng bánh bao thông minh. Phân tích nội dung đơn hàng của khách hàng và tìm sản phẩm chính xác trong menu.
+    Bạn là một hệ thống xử lý đơn hàng bánh bao. Nhiệm vụ của bạn là phân tích đơn hàng và tìm sản phẩm chính xác trong menu.
 
-    MENU CHÍNH:
+    MENU SẢN PHẨM:
     {menu}
-    
-    QUY TẮC VÀNG - PHẢI TUÂN THỦ TUYỆT ĐỐI:
-    1. TÁCH CÂU:
-       a) Tách khi gặp từ bắt đầu:
-          - "bao" -> bắt đầu sản phẩm mới
-          - "bánh" -> bắt đầu sản phẩm mới
-          - "xíu" -> bắt đầu sản phẩm mới
-          - "hamburger" -> bắt đầu sản phẩm mới
-          - "giò" -> bắt đầu sản phẩm mới
-          - "cảo" -> bắt đầu sản phẩm mới
-          - "hoành" -> bắt đầu sản phẩm mới
-          - "xôi" -> bắt đầu sản phẩm mới
-          - "đào" -> bắt đầu sản phẩm mới
-          - "dorayaki" -> bắt đầu sản phẩm mới
-          - "cuộn" -> bắt đầu sản phẩm mới
-          - "chướng" -> bắt đầu sản phẩm mới
-          - "mỹ hương" -> bắt đầu sản phẩm mới
-          - "thọ phát" -> bắt đầu sản phẩm mới
 
-       b) Tách khi gặp số lượng:
-          - "X cái" -> kết thúc sản phẩm hiện tại
-          - "cái thứ X" -> kết thúc sản phẩm hiện tại
-          - "X" (số) -> kết thúc sản phẩm hiện tại nếu không có từ "cái"
+    QUY TẮC XỬ LÝ ĐƠN HÀNG:
 
-       c) Tách khi gặp dấu phẩy hoặc từ nối:
-          - Dấu phẩy (,)
-          - Từ nối: "và", "với", "cùng"
+    1. TÌM KIẾM SẢN PHẨM:
+       - Chỉ chấp nhận sản phẩm có trong menu
+       - Phải khớp 100% tên sản phẩm hoặc từ khóa
+       - Không chấp nhận sản phẩm gần giống
+       - Không chấp nhận sản phẩm có tên khác
+       - Không chấp nhận sản phẩm có trọng lượng khác
+       - Không chấp nhận sản phẩm có thương hiệu khác
 
-    2. QUY TẮC XÁC ĐỊNH SỐ LƯỢNG:
-       a) Các trường hợp đặc biệt:
-          - "một" hoặc "1" -> số lượng là 1
-          - "hai" hoặc "2" -> số lượng là 2
-          - "ba" hoặc "3" -> số lượng là 3
-          - "bốn" hoặc "4" -> số lượng là 4
-          - "năm" hoặc "5" -> số lượng là 5
-          - "sáu" hoặc "6" -> số lượng là 6
-          - "bảy" hoặc "7" -> số lượng là 7
-          - "tám" hoặc "8" -> số lượng là 8
-          - "chín" hoặc "9" -> số lượng là 9
+    2. XÁC ĐỊNH SỐ LƯỢNG:
+       a) Chuyển đổi chữ thành số:
+          - "một" hoặc "1" -> 1
+          - "hai" hoặc "2" -> 2
+          - "ba" hoặc "3" -> 3
+          - "bốn" hoặc "4" -> 4
+          - "năm" hoặc "5" -> 5
+          - "sáu" hoặc "6" -> 6
+          - "bảy" hoặc "7" -> 7
+          - "tám" hoặc "8" -> 8
+          - "chín" hoặc "9" -> 9
+          - "mười" hoặc "10" -> 10
+          - "hai mươi" hoặc "20" -> 20
+          - "hai mươi ba" hoặc "23" -> 23
+          - "ba mươi" hoặc "30" -> 30
+          - "ba mươi lăm" hoặc "35" -> 35
+          - "bốn mươi" hoặc "40" -> 40
+          - "bốn mươi lăm" hoặc "45" -> 45
+          - "năm mươi" hoặc "50" -> 50
 
-       b) Nếu không tìm thấy số lượng -> mặc định là 1
+       b) Quy tắc ưu tiên số lượng:
+          - Số lượng là số gần nhất với từ "cái"
+          - Nếu có nhiều số gần từ "cái", lấy số đầy đủ (ví dụ: "23 cái" -> 23)
+          - Số ở đầu câu là số thứ tự, không phải số lượng
+          - Nếu không có từ "cái" và số, mặc định là 1
+          - Nếu không xác định được số lượng, mặc định là 1
+          - Số ở cuối câu là số lượng của sản phẩm cuối cùng
+          - Số lượng phải là số nguyên dương
 
-       c) Số lượng phải là số nguyên dương và không vượt quá 10
+    3. XỬ LÝ SẢN PHẨM KHÔNG TÌM THẤY:
+       - Đưa vào productsError nếu không tìm thấy trong menu
+       - Không thay thế bằng sản phẩm khác
+       - Không đoán sản phẩm
+       - Không bỏ qua sản phẩm
+       - Bỏ các từ chỉ thứ tự như "bà", "ba" khi đưa vào productsError
+       - Phải đưa tất cả sản phẩm không tìm thấy vào productsError
+       - Không được bỏ sót bất kỳ sản phẩm nào không tìm thấy
 
-    3. QUY TẮC TÌM SẢN PHẨM:
-       a) Tìm kiếm chính xác theo tên sản phẩm:
-          - So sánh từng từ trong tên sản phẩm với menu
-          - Phải khớp 100% tên sản phẩm hoặc từ khóa
-          - Không chấp nhận sản phẩm gần giống
-          - Không chấp nhận sản phẩm có tên khác
-          - Không chấp nhận sản phẩm có trọng lượng khác
-          - Không chấp nhận sản phẩm có thương hiệu khác
-          - Không chấp nhận sản phẩm có đặc điểm khác
-          - Không chấp nhận sản phẩm có từ khóa khác
-       
-       b) Nếu không tìm thấy -> ĐƯA VÀO productsError
-          - TUYỆT ĐỐI KHÔNG thay thế bằng sản phẩm khác
-          - TUYỆT ĐỐI KHÔNG đoán sản phẩm
-          - TUYỆT ĐỐI KHÔNG bỏ qua sản phẩm
-          - TUYỆT ĐỐI KHÔNG đưa vào products nếu không khớp 100%
-          - TUYỆT ĐỐI KHÔNG đưa sản phẩm không tìm thấy vào products
-
-    4. XỬ LÝ CÁC TRƯỜNG HỢP ĐẶC BIỆT:
+    4. CÁC TRƯỜNG HỢP ĐẶC BIỆT:
        a) Thương hiệu:
-          - "Thọ Phát" = "Thọ Phát"
-          - Nếu không có thương hiệu -> mặc định là "Thọ Phát"
+          - Mặc định là "Thọ Phát" nếu không có thương hiệu
+          - Phải khớp chính xác thương hiệu
 
-       b) Tên sản phẩm:
+       b) Từ khóa đặc biệt:
           - "cao su" = "cua xanh"
           - "theo" = "heo"
           - "Cúc" = "cút"
@@ -193,34 +181,16 @@ def create_prompt(question):
           - "bánh dorayaki" = "dorayaki"
           - "kosan" = "cua xanh"
           - "cục" = "cuộn"
+          - "mini" = "cua xanh"
 
-       c) Trọng lượng:
-          - Chỉ chấp nhận trọng lượng có trong menu
-          - Nếu trọng lượng không khớp -> ĐƯA VÀO productsError
-          - TUYỆT ĐỐI KHÔNG dùng trọng lượng để đoán sản phẩm
-          - TUYỆT ĐỐI KHÔNG đưa sản phẩm không có trọng lượng phù hợp vào products
-
-    5. XỬ LÝ SẢN PHẨM KHÔNG TÌM THẤY:
-       - Nếu sản phẩm đọc không đúng hoặc không tìm thấy trong menu
-       - Đưa vào trường productsError với format:
-         {{
-           "name": "tên sản phẩm đọc được",
-           "quantity": số_lượng
-         }}
-       - TUYỆT ĐỐI KHÔNG thay thế bằng sản phẩm khác
-       - TUYỆT ĐỐI KHÔNG đoán sản phẩm
-       - TUYỆT ĐỐI KHÔNG bỏ qua sản phẩm
-       - TUYỆT ĐỐI KHÔNG đưa vào products nếu không khớp 100%
-       - TUYỆT ĐỐI KHÔNG đưa sản phẩm không tìm thấy vào products
-
-    Trả về JSON theo format:
+    FORMAT KẾT QUẢ:
     {{
         "products": [
             {{
                 "name": "Tên sản phẩm từ menu",
                 "quantity": số_lượng,
                 "sapCode": mã_sản_phẩm,
-                "description": "Lý do chọn sản phẩm này nếu không khớp 100%"
+                "description": "Lý do chọn sản phẩm này"
             }}
         ],
         "productsError": [
@@ -232,7 +202,7 @@ def create_prompt(question):
     }}
 
     VÍ DỤ:
-    Input: "bao kosan vani 260 g 3 cái bao cục vàng 300 g 7 cái 3 hoa cúc 500g 8"
+    Input: "bầu cua xanh vani 260 g 3 cái 3 cuộn vàng 300 g 4 cái bao hoa cúc 500g 7 cái bao hoa hồng 264 g"
 
     Output:
     {{
@@ -241,44 +211,52 @@ def create_prompt(question):
                 "name": "Bánh Bao Thọ Phát KN Cua Xanh Vani 260g(65gx4)",
                 "quantity": 3,
                 "sapCode": "5000095",
-                "description": "Khớp hoàn toàn với yêu cầu: bao kosan vani 260g"
+                "description": "Khớp với yêu cầu: bầu cua xanh vani 260 g"
             }},
             {{
                 "name": "Bánh bao Thọ Phát Không Nhân Dài Cuộn Vàng 300g-25gx12",
-                "quantity": 7,
+                "quantity": 4,
                 "sapCode": "5000099",
-                "description": "Khớp hoàn toàn với yêu cầu: bao cục vàng 300g"
+                "description": "Khớp với yêu cầu: cuộn vàng 300 g"
+            }},
+            {{
+                "name": "Bánh Bao Thọ Phát Không Nhân Hoa Hồng HDL 264g-22gx12",
+                "quantity": 7,
+                "sapCode": "5000307",
+                "description": "Khớp với yêu cầu: bao hoa hồng 264 g"
             }}
         ],
         "productsError": [
             {{
-                "name": "3 hoa cúc 500g",
-                "quantity": 8
+                "name": "bầu cua xanh vani",
+                "quantity": 3
+            }},
+            {{
+                "name": "bao hoa cúc",
+                "quantity": 7
             }}
         ]
     }}
 
-    LƯU Ý CUỐI CÙNG:
-    1. TUYỆT ĐỐI KHÔNG được chuyển đổi tên sản phẩm
-    2. TUYỆT ĐỐI KHÔNG dùng trọng lượng để đoán tên
-    3. CHỈ chấp nhận khi khớp 100% từ khóa
-    4. CHỈ lấy số lượng khi có từ "cái" hoặc số đứng riêng
-    5. PHẢI lấy đúng số lượng gần với từ "cái" nhất
-    6. Nếu không khớp -> ĐƯA VÀO productsError
-    7. TUYỆT ĐỐI KHÔNG thay thế sản phẩm không tìm thấy bằng sản phẩm khác
-    8. TUYỆT ĐỐI KHÔNG đoán màu sắc hoặc đặc điểm khác của sản phẩm
-    9. PHẢI kiểm tra thương hiệu (Mỹ Hương/Thọ Phát) trước khi tìm sản phẩm
-    10. PHẢI kiểm tra trọng lượng có tồn tại trong menu
-    11. TUYỆT ĐỐI KHÔNG đưa sản phẩm không khớp 100% vào products
-    12. TUYỆT ĐỐI KHÔNG đoán hoặc thay thế sản phẩm không tìm thấy
-    13. TUYỆT ĐỐI KHÔNG đưa sản phẩm không có trọng lượng phù hợp vào products
-    14. TUYỆT ĐỐI KHÔNG đưa sản phẩm không tìm thấy vào products
-    15. PHẢI tìm kiếm chính xác theo tên sản phẩm hoặc từ khóa trong menu
-    16. TUYỆT ĐỐI KHÔNG chấp nhận sản phẩm gần giống hoặc có tên khác
-    17. TUYỆT ĐỐI KHÔNG chấp nhận sản phẩm có trọng lượng khác
-    18. TUYỆT ĐỐI KHÔNG chấp nhận sản phẩm có thương hiệu khác
-    19. TUYỆT ĐỐI KHÔNG chấp nhận sản phẩm có đặc điểm khác
-    20. TUYỆT ĐỐI KHÔNG chấp nhận sản phẩm có từ khóa khác
+    QUY TẮC QUAN TRỌNG:
+    1. Chỉ chấp nhận sản phẩm có trong menu
+    2. Không thay thế sản phẩm không tìm thấy
+    3. Không đoán sản phẩm
+    4. Không bỏ qua sản phẩm
+    5. Phải khớp 100% tên sản phẩm
+    6. Phải khớp 100% trọng lượng
+    7. Phải khớp 100% thương hiệu
+    8. Phải xử lý tất cả sản phẩm trong đơn hàng
+    9. Phải đưa sản phẩm không tìm thấy vào productsError
+    10. Phải kiểm tra kỹ từng sản phẩm trước khi đưa vào products
+    11. Nếu không xác định được số lượng, mặc định là 1
+    12. Phải chuyển đổi số bằng chữ thành số
+    13. Số ở cuối câu là số lượng của sản phẩm cuối cùng
+    14. Bỏ các từ chỉ thứ tự khi đưa vào productsError
+    15. Ưu tiên lấy số lượng từ từ "cái" trước
+    16. Nếu có nhiều số gần từ "cái", lấy số đầy đủ
+    17. Phải đưa tất cả sản phẩm không tìm thấy vào productsError
+    18. Không được bỏ sót bất kỳ sản phẩm nào không tìm thấy
     """
 
 def transcribe_audio(audio_data):
@@ -352,10 +330,13 @@ def process_with_gemini(text):
         # Cập nhật current_order với dữ liệu mới
         current_order.update({
             "products": gemini_response.get("products", []),
+            "productsError": gemini_response.get("productsError", []),
             "total_items": sum(p.get("quantity", 0) for p in gemini_response.get("products", [])),
             "updated_at": datetime.now().isoformat(),
             "message": gemini_response.get("message", "Đã cập nhật đơn hàng"),
-            "spoken_text": text
+            "spoken_text": text,
+            "isLoading": False,
+            "error": None
         })
         
         # Nếu created_at là None, set nó thành thời gian hiện tại
@@ -463,6 +444,7 @@ def reset_order():
         global current_order
         current_order = {
             "products": [],
+            "productsError": [],
             "total_items": 0,
             "created_at": datetime.now().isoformat(),
             "updated_at": datetime.now().isoformat(),
