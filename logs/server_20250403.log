@@ -1,0 +1,26 @@
+2025-04-03 12:29:34 - INFO - Server starting...
+2025-04-03 12:30:31 - INFO - Chuyển đổi WebM sang WAV: 1.701s
+2025-04-03 12:30:31 - INFO - Lưu file WAV tạm thời: 0.001s
+2025-04-03 12:30:31 - INFO - Điều chỉnh nhiễu: 0.001s
+2025-04-03 12:30:31 - INFO - Lưu file đã điều chỉnh: 0.001s
+2025-04-03 12:30:44 - INFO - Nhận dạng giọng nói: 12.717s
+2025-04-03 12:30:44 - INFO - Xóa file tạm: 0.003s
+2025-04-03 12:30:44 - INFO - Tổng thời gian xử lý audio: 14.425s
+2025-04-03 12:30:44 - INFO - 03-04-2025 12:30:29	handle_transcribe	/transcribe	SUCCESS	Audio: 14.426s - Gemini: 0.002s - Tổng: 14.430s	466	Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36	{"audio_file": "blob", "client_ip": "127.0.0.1", "text": "bao cao su xanh vani 260 g 3 cái 3 cuộn vàng 300 g 4 cái bao thập cẩm một cút muối 780 g một cái bao xúc xích phô mai 400 gam 5 cái bao hoa hồng 264 gam 6 cái bao Mỹ Hương theo một cút muối 640 g Ba cái bao Mỹ Hương thập cẩm hai Cúc 520 g 7 cái chướng ngại tôn 600 g Ba cái Amazon 700 g một cái đào đậu xanh 70 gam 9"}	Kết quả: {"products": [], "order_status": "new", "total_items": 0, "created_at": null, "updated_at": null, "message": ""}
+2025-04-03 12:36:00 - INFO - Chuyển đổi WebM sang WAV: 0.208s
+2025-04-03 12:36:00 - INFO - Lưu file WAV tạm thời: 0.001s
+2025-04-03 12:36:00 - INFO - Điều chỉnh nhiễu: 0.000s
+2025-04-03 12:36:00 - INFO - Lưu file đã điều chỉnh: 0.000s
+2025-04-03 12:36:01 - INFO - Nhận dạng giọng nói: 1.808s
+2025-04-03 12:36:01 - INFO - Xóa file tạm: 0.001s
+2025-04-03 12:36:01 - INFO - Tổng thời gian xử lý audio: 2.020s
+2025-04-03 12:36:01 - INFO - 03-04-2025 12:35:59	handle_transcribe	/transcribe	SUCCESS	Audio: 2.020s - Gemini: 0.001s - Tổng: 2.023s	204	Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36	{"audio_file": "blob", "client_ip": "127.0.0.1", "text": "bao cao su vani 260 g 3 cái bao Phụng vàng 300 g 4 cái"}	Kết quả: {"products": [], "order_status": "new", "total_items": 0, "created_at": null, "updated_at": null, "message": ""}
+2025-04-03 12:38:57 - INFO - Server starting...
+2025-04-03 12:39:12 - INFO - Chuyển đổi WebM sang WAV: 0.226s
+2025-04-03 12:39:12 - INFO - Lưu file WAV tạm thời: 0.000s
+2025-04-03 12:39:12 - INFO - Điều chỉnh nhiễu: 0.000s
+2025-04-03 12:39:12 - INFO - Lưu file đã điều chỉnh: 0.000s
+2025-04-03 12:39:14 - INFO - Nhận dạng giọng nói: 1.867s
+2025-04-03 12:39:14 - INFO - Xóa file tạm: 0.001s
+2025-04-03 12:39:14 - INFO - Tổng thời gian xử lý audio: 2.095s
+2025-04-03 12:39:17 - INFO - 03-04-2025 12:39:12	handle_transcribe	/transcribe	SUCCESS	Audio: 2.096s - Gemini: 3.181s - Tổng: 5.279s	859	Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36	{"audio_file": "blob", "client_ip": "127.0.0.1", "text": "bao cao su xanh vani 260 g 3 cái bao Phượng vàng 300 g 4"}	Kết quả: {"products": [{"name": "Bánh Bao Thọ Phát KN Cua Xanh Vani 260g(65gx4)", "quantity": 3, "sapCode": "5000095", "description": "Khớp hoàn toàn với yêu cầu: cua xanh vani 260g"}, {"name": "Bánh bao Thọ Phát Không Nhân Dài Cuộn Vàng 300g-25gx12", "quantity": 4, "sapCode": "5000099", "description": "Không tìm thấy 'Phượng vàng', sản phẩm gần đúng nhất là bánh bao cuộn vàng 300g"}], "order_status": "new", "total_items": 7, "created_at": "2025-04-03T12:39:17.882534", "updated_at": "2025-04-03T12:39:17.882504", "message": "Tôi đã chọn 3 bánh bao cua xanh vani 260g và 4 bánh bao cuộn vàng 300g cho bạn. Do không tìm thấy sản phẩm 'Phượng vàng', tôi đã thay thế bằng bánh bao cuộn vàng 300g.", "spoken_text": "bao cao su xanh vani 260 g 3 cái bao Phượng vàng 300 g 4"}

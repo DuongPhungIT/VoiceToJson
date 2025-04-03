@@ -1,0 +1,23 @@
+2025-04-03 12:30:44
+Lỗi xử lý Gemini: Invalid format specifier
+
+2025-04-03 12:30:44
+Traceback (most recent call last):
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 295, in process_with_gemini
+    prompt = create_prompt(text)
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 107, in create_prompt
+    return f"""
+ValueError: Invalid format specifier
+
+
+2025-04-03 12:36:01
+Lỗi xử lý Gemini: Invalid format specifier
+
+2025-04-03 12:36:01
+Traceback (most recent call last):
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 295, in process_with_gemini
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 107, in create_prompt
+    menu = get_menu()
+ValueError: Invalid format specifier
+
+

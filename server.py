@@ -104,234 +104,101 @@ if not os.path.exists(AUDIO_UPLOAD_FOLDER):
     os.makedirs(AUDIO_UPLOAD_FOLDER)
 
 def create_prompt(question):
+    menu = get_menu()
     return f"""
     Câu hỏi: {question}
     
-    QUY TẮC VÀNG - PHẢI TUÂN THỦ TUYỆT ĐỐI:
-    1. KHÔNG ĐƯỢC TỰ Ý CHUYỂN ĐỔI TÊN SẢN PHẨM
-    2. KHÔNG DÙNG TRỌNG LƯỢNG ĐỂ ĐOÁN TÊN
-    3. PHẢI KHỚP 100% TỪ KHÓA THEO MENU
-    4. CHỈ LẤY SỐ LƯỢNG KHI CÓ TỪ "CÁI"
-    5. KHÔNG ĐƯỢC ĐOÁN TỪ TƯƠNG TỰ
-    6. NẾU KHÔNG KHỚP -> BỎ QUA HOÀN TOÀN
+    Bạn là một hệ thống nhận đơn hàng bánh bao thông minh. Phân tích nội dung đơn hàng của khách hàng và tìm sản phẩm gần giống nhất nếu không tìm thấy chính xác.
     
-    QUY TẮC NHẬN DIỆN TỪ KHÓA:
-    1. Bánh bao hoa hồng:
-       - PHẢI có chính xác "hoa hồng"
-       - KHÔNG chấp nhận: "hoa cúc", "hoa mai", "bông hồng",...
-
-    2. Bánh bao cua xanh:
-       - Chấp nhận: "cua xanh" hoặc "cao su"
-       - PHẢI đi kèm "vani" và "260g"
-
-    [các sản phẩm khác...]
-
-    VÍ DỤ PHÂN TÍCH:
-    Input: "bao hoa cúc 5 cái"
-    
-    Phân tích:
-    - Tìm thấy "hoa cúc"
-    - "hoa cúc" ≠ "hoa hồng"
-    - KHÔNG ĐƯỢC thay thế "cúc" bằng "hồng"
-    -> BỎ QUA vì không khớp từ khóa menu
-
-    QUY TẮC NHẬN DIỆN VÀ XỬ LÝ:
-    1. TÁCH CÂU:
-       - Tách khi gặp từ bắt đầu: "bao", "bánh", "xíu", "hamburger", "giò", "cảo", "hoành", "xôi", "đào", "dorayaki"
-       - Tách khi gặp số lượng: "X cái"
-       - Tách khi gặp dấu phẩy hoặc từ nối
-
-    2. TỪ ĐỒNG NGHĨA ĐƯỢC CHẤP NHẬN:
-       PHÁT ÂM SẢN PHẨM:
-       - "cao su/venix" = "cua xanh"
-       - "theo" = "heo"
-       - "khúc/phút" = "cút"
-       - "sứ mệnh/khuyến mại/nếu mái" = "xíu mại"
-       - "tôn" = "tôm"
-       - "bì hương" = "mỹ hương"
-       
-       PHÁT ÂM SỐ:
-       - "một/mốt" = 1
-       - "hai" = 2
-       - "ba" = 3
-       - "bốn" = 4
-       - "năm" = 5
-       - "sáu" = 6
-       - "bảy" = 7
-       - "tám" = 8
-       - "chín" = 9
-       - "mười" = 10
-
-    3. TỪ KHÓA THEO NHÓM SẢN PHẨM:
-       PHỤ KIỆN:
-       - Hộp giấy: hộp + giấy
-       - Túi giấy bánh bao: túi + giấy
-       - Túi Hamburger: túi + hamburger
-       - Đĩa kết đào: đĩa + (nhỏ/trung/lớn) + (15/17/21)cm
-       - Mâm kết đào: mâm + (nhỏ/trung/lớn) + (25/30/35)cm
-
-       BÁNH GIÒ:
-       - Giò gà: giò + gà + 1 cút + 150g
-       - Giò heo: giò + heo + (1/2) cút + (150g/200g)
-
-       BÁNH BAO THỌ PHÁT:
-       - Bí đỏ: bí đỏ + sữa + 280g
-       - Cade: cade + (240g/280g)
-       - Đậu xanh: đậu xanh + (200g/280g/300g/400g)
-       - Hoàng kim: hoàng kim + 300g
-       - Khoai môn: khoai môn + (200g/280g)
-       - Than tre: than tre + phô mai + 300g
-       - Cua xanh: (cua xanh/cao su) + vani + 260g
-       - Cuộn màu: cuộn + (hồng/môn/cacao/vàng/xanh) + không nhân + (300g/500g)
-       - Vuông: vuông + không nhân + (300g/264g)
-       - Hoa hồng: hoa hồng + không nhân + (300g/264g)
-       - Bánh kẹp: bánh kẹp + 520g
-       - Tạo hình: 
-         + con + (ong/gà/gấu/heo/nhím) + (trứng sữa/lá dứa) + 200g
-         + con gấu + socola + 200g
-         + người tuyết + socola + 240g
-         + trái tim + socola + valentine + 200g
-       - Chay: 
-         + chay + 400g
-         + chay đặc biệt + 640g
-         + chay + đậu hũ + sả + 400g
-       - Heo: 
-         + heo + (1/2/7) cút + (có/không muối) + trọng lượng
-         + heo đặc biệt + 1 cút + muối + 780g
-       - Thập cẩm: thập cẩm + (1/2) cút + (có/không muối) + trọng lượng
-       - Xá xíu: xá xíu + (phô mai/không) + (280g/480g)
-       - Bò pizza: bò + pizza + phô mai + 480g
-       - Xúc xích: xúc xích + phô mai + 400g
-       - Gà nướng: gà nướng + phô mai + 400g
-       - Phát tài: phát tài + 240g
-       - Dừa: 
-         + dừa + thốt nốt + trân châu + 200g
-         + cơm dừa + 200g
-
-       BÁNH BAO MỸ HƯƠNG:
-       - Bí đỏ: mỹ hương + bí đỏ + sữa + (300g/264g)
-       - Vịt quay: mỹ hương + vịt quay + tiêu đen + 280g
-       - Heo: mỹ hương + heo + (1/2/3) cút + (có/không muối) + trọng lượng
-       - Thập cẩm: mỹ hương + thập cẩm + 2 cút + 520g
-
-       BÁNH BÔNG LAN:
-       - Bông lan phô mai: bông lan + phô mai + 90g
-
-       HÁ CẢO:
-       - Cảo heo: cảo + heo + (500g/600g)
-       - Cảo tôm: cảo + tôm + 600g
-
-       HOÀNH THÁNH:
-       - Hoành thánh heo: hoành thánh + heo + (500g/480g)
-       - Hoành thánh tôm: hoành thánh + tôm + 400g
-
-       XÍU MẠI:
-       - Xíu mại heo: xíu mại + heo + 500g
-       - Xíu mại tôm: xíu mại + tôm + 600g
-       - Xíu mại thịt viên: xíu mại + thịt viên + 600g
-
-       XÔI:
-       - Xôi gà: xôi + gà + nấm đông cô + 160g
-
-       HAMBURGER:
-       - Hamburger bò: hamburger + bò + 650g
-       - Hamburger gà: hamburger + gà + 720g
-       - Hamburger heo: hamburger + heo + 800g
-       - Hamburger tôm: hamburger + tôm + 700g
-       - Vỏ hamburger: vỏ + bánh + hamburger
-
-       BÁNH TRÁI ĐÀO:
-       - Đào đậu xanh: đào + đậu xanh + 70g
-       - Đào khoai môn: đào + khoai môn + 70g
-
-       BÁNH DORAYAKI:
-       - Dorayaki chà bông: dorayaki + chà bông + bơ + 50g
-       - Dorayaki socola: dorayaki + socola + 50g
-
-    4. QUY TẮC XỬ LÝ:
-       TRỌNG LƯỢNG:
-       - PHẢI khớp chính xác với menu
-       - Chấp nhận "g" hoặc "gam"
-       - KHÔNG dùng để đoán tên sản phẩm
-       
-       SỐ LƯỢNG - QUY TẮC NGHIÊM NGẶT:
-       a) CHỈ lấy số trong các trường hợp:
-          1. Số đi kèm từ "cái":
-             - "X cái" -> số lượng = X
-             - "cái thứ X" -> số lượng = X
-          2. Nếu không tìm thấy số lượng -> mặc định = 1
-          
-       b) Ưu tiên số gần nhất với từ "cái":
-          ✓ ĐÚNG:
-          - "5 cái" -> số lượng = 5
-          - "cái thứ năm" -> số lượng = 5
-          - "bao hoa hồng 264g 6 cái" -> số lượng = 6
-          
-          ✗ SAI:
-          - "5 bao" -> không lấy số lượng
-          - "3 cút" -> không phải số lượng
-          - "600g" -> không phải số lượng
-          - "600 g" -> không phải số lượng
-
-    5. VÍ DỤ PHÂN TÍCH:
-    Input: "bao cao su venix 260g 3 cái bao mỹ hương theo một khúc muối 640g ba cái bao bì hương thập cẩm hai khúc 520g vậy cái"
-    
-    Phân tích:
-    1) "bao hoa hồng 264g"
-       - Từ khóa: hoa hồng, không nhân, 264g ✓
-       - Không thấy số lượng -> mặc định = 1 ✓
-       -> CHẤP NHẬN: Bánh Bao Thọ Phát Không Nhân Hoa Hồng
-    
-    2) "xúc xích phô mai 400g 5 cái"
-       - Từ khóa: xúc xích, phô mai, 400g ✓
-       - Số lượng: "5 cái" = 5 ✓
-       -> CHẤP NHẬN: Bánh Bao Thọ Phát Xúc Xích Phô Mai
-       
-    3) "bao cao su venix 260g 3 cái"
-       - "venix" = "vani" ✓
-       - cao su = cua xanh ✓
-       - Từ khóa: cua xanh, vani, 260g ✓
-       - Số lượng: "3 cái" = 3 ✓
-       -> CHẤP NHẬN: Bánh Bao Thọ Phát KN Cua Xanh Vani
-    
-    4) "bao mỹ hương theo một khúc muối 640g ba cái"
-       - "theo" = "heo" ✓
-       - "khúc" = "cút" ✓
-       - "một" = 1 (trong mô tả sản phẩm) ✓
-       - Từ khóa: mỹ hương, heo, 1 cút, muối, 640g ✓
-       - Số lượng: "ba cái" = 3 ✓
-       -> CHẤP NHẬN: Bánh Bao Mỹ Hương Thịt Heo 1C1M
-
-    5) "bao bì hương thập cẩm hai khúc 520g vậy cái"
-       - "bì hương" = "mỹ hương" ✓
-       - "khúc" = "cút" ✓
-       - "vậy" = "bảy" ✓
-       - Từ khóa: mỹ hương, thập cẩm, 2 cút, 520g ✓
-       - Số lượng: "bảy cái" = 7 ✓
-       -> CHẤP NHẬN: Bánh bao Mỹ Hương Thập cẩm 2C
-
     MENU CHÍNH:
-    {get_menu()}
-
-    Trả về JSON với cấu trúc:
+    {menu}
+    
+    NHIỆM VỤ CỦA BẠN:
+    1. Phân tích câu nói thành các đơn hàng riêng biệt:
+       - Tách câu nói dài thành các đơn hàng nhỏ dựa trên:
+         + Dấu phẩy (,)
+         + Từ nối (và, với)
+         + Số lượng mới (một, hai, ba, etc.)
+         + Tên sản phẩm mới
+       - Mỗi đơn hàng phải có đầy đủ thông tin:
+         + Tên sản phẩm
+         + Số lượng
+         + Trọng lượng (nếu có)
+       
+    2. Với mỗi đơn hàng, phân tích:
+       - Tên sản phẩm (ví dụ: bánh bao, bánh giò)
+       - Loại nhân (ví dụ: thịt, đậu xanh, khoai môn, bí đỏ)
+       - Thương hiệu (ví dụ: Thọ Phát, Mỹ Hương)
+       - Kích thước (ví dụ: 400g, 280g)
+       - Số lượng (ví dụ: 2 cái, 1 hộp)
+       
+    3. Quy tắc xác định số lượng:
+       - Số lượng phải được xác định cho mỗi sản phẩm riêng biệt
+       - Tìm số lượng theo thứ tự ưu tiên:
+         1. Số lượng ở cuối mỗi đơn hàng (ví dụ: "bao Mỹ Hương theo một cút muối 640g ba cái" -> số lượng là 3)
+         2. Số lượng ngay sau tên sản phẩm (ví dụ: "ba cái bánh bao" -> số lượng là 3)
+         3. Số lượng ngay trước tên sản phẩm (ví dụ: "2 bánh bao" -> số lượng là 2)
+       - Các trường hợp đặc biệt:
+         + "một" hoặc "1" -> số lượng là 1
+         + "hai" hoặc "2" -> số lượng là 2
+         + "ba" hoặc "3" -> số lượng là 3
+         + "bốn" hoặc "4" -> số lượng là 4
+         + "năm" hoặc "5" -> số lượng là 5
+         + "sáu" hoặc "6" -> số lượng là 6
+         + "bảy" hoặc "7" -> số lượng là 7
+         + "tám" hoặc "8" -> số lượng là 8
+         + "chín" hoặc "9" -> số lượng là 9
+       - Nếu không tìm thấy số lượng -> mặc định là 1
+       
+    4. Quy tắc tìm sản phẩm:
+       - Ưu tiên tìm sản phẩm khớp 100% với yêu cầu
+       - Nếu không tìm thấy, tìm sản phẩm có từ khóa gần giống nhất theo thứ tự:
+         1. Loại nhân (thịt, đậu, khoai môn, etc.)
+         2. Kích thước (400g, 280g, etc.)
+         3. Thương hiệu (Thọ Phát, Mỹ Hương)
+       - Giải thích rõ lý do chọn sản phẩm nếu không khớp 100%
+       
+    5. Xử lý các trường hợp đặc biệt:
+       - Nếu khách nói "bánh bao" -> tìm sản phẩm bánh bao
+       - Nếu khách nói "bánh giò" -> tìm sản phẩm bánh giò
+       - Nếu khách nói "cảo" -> tìm sản phẩm há cảo
+       - Nếu khách nói "chay" -> tìm sản phẩm nhân chay
+       - Nếu khách nói "sữa tươi" -> tìm sản phẩm có sữa tươi
+       - Nếu khách nói "thập cẩm" -> tìm sản phẩm thập cẩm
+       - Nếu khách nói "xúc xích" -> tìm sản phẩm xúc xích
+       - Nếu khách nói "phô mai" -> tìm sản phẩm phô mai
+       - Nếu khách nói "hoa hồng" -> tìm sản phẩm hoa hồng
+       - Nếu khách nói "tôm" -> tìm sản phẩm tôm
+       - Nếu khách nói "xíu mại" -> tìm sản phẩm xíu mại
+       - Nếu khách nói "hamburger" -> tìm sản phẩm hamburger
+       - Nếu khách nói "đào" -> tìm sản phẩm bánh trái đào
+    
+    Trả về JSON theo format sau:
     {{
         "products": [
             {{
-                "name": "Tên đầy đủ từ menu",
-                "quantity": số_lượng_từ_cái,
-                "sapCode": "mã_sản_phẩm",
-                "description": "Khớp 100% với yêu cầu: <từ khóa khớp>"
+                "name": "Tên sản phẩm từ menu",
+                "quantity": số_lượng,
+                "sapCode": mã_sản_phẩm,
+                "description": "Lý do chọn sản phẩm này nếu không khớp 100%"
             }}
-        ]
+        ],
+        "message": "Thông báo cho khách hàng"
     }}
 
-    LƯU Ý CUỐI CÙNG:
-    1. TUYỆT ĐỐI KHÔNG được chuyển đổi tên sản phẩm
-    2. TUYỆT ĐỐI KHÔNG dùng trọng lượng để đoán tên
-    3. CHỈ chấp nhận khi khớp 100% từ khóa
-    4. CHỈ lấy số lượng khi có từ "cái"
-    5. PHẢI lấy đúng số lượng gần với từ "cái" nhất
-    6. Nếu không khớp -> BỎ QUA hoàn toàn
+    Ví dụ khi khách nói "bao Mỹ Hương theo một cút muối 640g ba cái":
+    {{
+        "products": [
+            {{
+                "name": "Bánh Bao Mỹ Hương Thịt Heo 1C1M 640g (160gx4)",
+                "quantity": 3,
+                "sapCode": "5000165",
+                "description": "Khớp hoàn toàn với yêu cầu: bao Mỹ Hương theo một cút muối 640g"
+            }}
+        ],
+        "message": "Tôi đã chọn 3 bánh bao Mỹ Hương thịt heo một cút muối cho bạn"
+    }}
+
     """
 
 def transcribe_audio(audio_data):
