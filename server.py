@@ -108,72 +108,112 @@ def create_prompt(question):
     return f"""
     Câu hỏi: {question}
     
-    Bạn là một hệ thống nhận đơn hàng bánh bao thông minh. Phân tích nội dung đơn hàng của khách hàng và tìm sản phẩm gần giống nhất nếu không tìm thấy chính xác.
-    
+    Bạn là một hệ thống nhận đơn hàng bánh bao thông minh. Phân tích nội dung đơn hàng của khách hàng và tìm sản phẩm chính xác trong menu.
+
     MENU CHÍNH:
     {menu}
     
-    NHIỆM VỤ CỦA BẠN:
-    1. Phân tích câu nói thành các đơn hàng riêng biệt:
-       - Tách câu nói dài thành các đơn hàng nhỏ dựa trên:
-         + Dấu phẩy (,)
-         + Từ nối (và, với)
-         + Số lượng mới (một, hai, ba, etc.)
-         + Tên sản phẩm mới
-       - Mỗi đơn hàng phải có đầy đủ thông tin:
-         + Tên sản phẩm
-         + Số lượng
-         + Trọng lượng (nếu có)
+    QUY TẮC VÀNG - PHẢI TUÂN THỦ TUYỆT ĐỐI:
+    1. TÁCH CÂU:
+       a) Tách khi gặp từ bắt đầu:
+          - "bao" -> bắt đầu sản phẩm mới
+          - "bánh" -> bắt đầu sản phẩm mới
+          - "xíu" -> bắt đầu sản phẩm mới
+          - "hamburger" -> bắt đầu sản phẩm mới
+          - "giò" -> bắt đầu sản phẩm mới
+          - "cảo" -> bắt đầu sản phẩm mới
+          - "hoành" -> bắt đầu sản phẩm mới
+          - "xôi" -> bắt đầu sản phẩm mới
+          - "đào" -> bắt đầu sản phẩm mới
+          - "dorayaki" -> bắt đầu sản phẩm mới
+          - "cuộn" -> bắt đầu sản phẩm mới
+          - "chướng" -> bắt đầu sản phẩm mới
+          - "mỹ hương" -> bắt đầu sản phẩm mới
+          - "thọ phát" -> bắt đầu sản phẩm mới
+
+       b) Tách khi gặp số lượng:
+          - "X cái" -> kết thúc sản phẩm hiện tại
+          - "cái thứ X" -> kết thúc sản phẩm hiện tại
+          - "X" (số) -> kết thúc sản phẩm hiện tại nếu không có từ "cái"
+
+       c) Tách khi gặp dấu phẩy hoặc từ nối:
+          - Dấu phẩy (,)
+          - Từ nối: "và", "với", "cùng"
+
+    2. QUY TẮC XÁC ĐỊNH SỐ LƯỢNG:
+       a) Các trường hợp đặc biệt:
+          - "một" hoặc "1" -> số lượng là 1
+          - "hai" hoặc "2" -> số lượng là 2
+          - "ba" hoặc "3" -> số lượng là 3
+          - "bốn" hoặc "4" -> số lượng là 4
+          - "năm" hoặc "5" -> số lượng là 5
+          - "sáu" hoặc "6" -> số lượng là 6
+          - "bảy" hoặc "7" -> số lượng là 7
+          - "tám" hoặc "8" -> số lượng là 8
+          - "chín" hoặc "9" -> số lượng là 9
+
+       b) Nếu không tìm thấy số lượng -> mặc định là 1
+
+       c) Số lượng phải là số nguyên dương và không vượt quá 10
+
+    3. QUY TẮC TÌM SẢN PHẨM:
+       a) Tìm kiếm chính xác theo tên sản phẩm:
+          - So sánh từng từ trong tên sản phẩm với menu
+          - Phải khớp 100% tên sản phẩm hoặc từ khóa
+          - Không chấp nhận sản phẩm gần giống
+          - Không chấp nhận sản phẩm có tên khác
+          - Không chấp nhận sản phẩm có trọng lượng khác
+          - Không chấp nhận sản phẩm có thương hiệu khác
+          - Không chấp nhận sản phẩm có đặc điểm khác
+          - Không chấp nhận sản phẩm có từ khóa khác
        
-    2. Với mỗi đơn hàng, phân tích:
-       - Tên sản phẩm (ví dụ: bánh bao, bánh giò)
-       - Loại nhân (ví dụ: thịt, đậu xanh, khoai môn, bí đỏ)
-       - Thương hiệu (ví dụ: Thọ Phát, Mỹ Hương)
-       - Kích thước (ví dụ: 400g, 280g)
-       - Số lượng (ví dụ: 2 cái, 1 hộp)
-       
-    3. Quy tắc xác định số lượng:
-       - Số lượng phải được xác định cho mỗi sản phẩm riêng biệt
-       - Tìm số lượng theo thứ tự ưu tiên:
-         1. Số lượng ở cuối mỗi đơn hàng (ví dụ: "bao Mỹ Hương theo một cút muối 640g ba cái" -> số lượng là 3)
-         2. Số lượng ngay sau tên sản phẩm (ví dụ: "ba cái bánh bao" -> số lượng là 3)
-         3. Số lượng ngay trước tên sản phẩm (ví dụ: "2 bánh bao" -> số lượng là 2)
-       - Các trường hợp đặc biệt:
-         + "một" hoặc "1" -> số lượng là 1
-         + "hai" hoặc "2" -> số lượng là 2
-         + "ba" hoặc "3" -> số lượng là 3
-         + "bốn" hoặc "4" -> số lượng là 4
-         + "năm" hoặc "5" -> số lượng là 5
-         + "sáu" hoặc "6" -> số lượng là 6
-         + "bảy" hoặc "7" -> số lượng là 7
-         + "tám" hoặc "8" -> số lượng là 8
-         + "chín" hoặc "9" -> số lượng là 9
-       - Nếu không tìm thấy số lượng -> mặc định là 1
-       
-    4. Quy tắc tìm sản phẩm:
-       - Ưu tiên tìm sản phẩm khớp 100% với yêu cầu
-       - Nếu không tìm thấy, tìm sản phẩm có từ khóa gần giống nhất theo thứ tự:
-         1. Loại nhân (thịt, đậu, khoai môn, etc.)
-         2. Kích thước (400g, 280g, etc.)
-         3. Thương hiệu (Thọ Phát, Mỹ Hương)
-       - Giải thích rõ lý do chọn sản phẩm nếu không khớp 100%
-       
-    5. Xử lý các trường hợp đặc biệt:
-       - Nếu khách nói "bánh bao" -> tìm sản phẩm bánh bao
-       - Nếu khách nói "bánh giò" -> tìm sản phẩm bánh giò
-       - Nếu khách nói "cảo" -> tìm sản phẩm há cảo
-       - Nếu khách nói "chay" -> tìm sản phẩm nhân chay
-       - Nếu khách nói "sữa tươi" -> tìm sản phẩm có sữa tươi
-       - Nếu khách nói "thập cẩm" -> tìm sản phẩm thập cẩm
-       - Nếu khách nói "xúc xích" -> tìm sản phẩm xúc xích
-       - Nếu khách nói "phô mai" -> tìm sản phẩm phô mai
-       - Nếu khách nói "hoa hồng" -> tìm sản phẩm hoa hồng
-       - Nếu khách nói "tôm" -> tìm sản phẩm tôm
-       - Nếu khách nói "xíu mại" -> tìm sản phẩm xíu mại
-       - Nếu khách nói "hamburger" -> tìm sản phẩm hamburger
-       - Nếu khách nói "đào" -> tìm sản phẩm bánh trái đào
-    
-    Trả về JSON theo format sau:
+       b) Nếu không tìm thấy -> ĐƯA VÀO productsError
+          - TUYỆT ĐỐI KHÔNG thay thế bằng sản phẩm khác
+          - TUYỆT ĐỐI KHÔNG đoán sản phẩm
+          - TUYỆT ĐỐI KHÔNG bỏ qua sản phẩm
+          - TUYỆT ĐỐI KHÔNG đưa vào products nếu không khớp 100%
+          - TUYỆT ĐỐI KHÔNG đưa sản phẩm không tìm thấy vào products
+
+    4. XỬ LÝ CÁC TRƯỜNG HỢP ĐẶC BIỆT:
+       a) Thương hiệu:
+          - "Thọ Phát" = "Thọ Phát"
+          - Nếu không có thương hiệu -> mặc định là "Thọ Phát"
+
+       b) Tên sản phẩm:
+          - "cao su" = "cua xanh"
+          - "theo" = "heo"
+          - "Cúc" = "cút"
+          - "chướng ngại" = "xíu mại"
+          - "tôn" = "tôm"
+          - "Amazon" = "hamburger"
+          - "Phượng" = "cuộn"
+          - "Công" = "cuộn"
+          - "bánh kẹp" = "bánh kẹp"
+          - "bánh trái đào" = "đào"
+          - "bánh dorayaki" = "dorayaki"
+          - "kosan" = "cua xanh"
+          - "cục" = "cuộn"
+
+       c) Trọng lượng:
+          - Chỉ chấp nhận trọng lượng có trong menu
+          - Nếu trọng lượng không khớp -> ĐƯA VÀO productsError
+          - TUYỆT ĐỐI KHÔNG dùng trọng lượng để đoán sản phẩm
+          - TUYỆT ĐỐI KHÔNG đưa sản phẩm không có trọng lượng phù hợp vào products
+
+    5. XỬ LÝ SẢN PHẨM KHÔNG TÌM THẤY:
+       - Nếu sản phẩm đọc không đúng hoặc không tìm thấy trong menu
+       - Đưa vào trường productsError với format:
+         {{
+           "name": "tên sản phẩm đọc được",
+           "quantity": số_lượng
+         }}
+       - TUYỆT ĐỐI KHÔNG thay thế bằng sản phẩm khác
+       - TUYỆT ĐỐI KHÔNG đoán sản phẩm
+       - TUYỆT ĐỐI KHÔNG bỏ qua sản phẩm
+       - TUYỆT ĐỐI KHÔNG đưa vào products nếu không khớp 100%
+       - TUYỆT ĐỐI KHÔNG đưa sản phẩm không tìm thấy vào products
+
+    Trả về JSON theo format:
     {{
         "products": [
             {{
@@ -183,22 +223,62 @@ def create_prompt(question):
                 "description": "Lý do chọn sản phẩm này nếu không khớp 100%"
             }}
         ],
-        "message": "Thông báo cho khách hàng"
+        "productsError": [
+            {{
+                "name": "Tên sản phẩm không tìm thấy",
+                "quantity": số_lượng
+            }}
+        ]
     }}
 
-    Ví dụ khi khách nói "bao Mỹ Hương theo một cút muối 640g ba cái":
+    VÍ DỤ:
+    Input: "bao kosan vani 260 g 3 cái bao cục vàng 300 g 7 cái 3 hoa cúc 500g 8"
+
+    Output:
     {{
         "products": [
             {{
-                "name": "Bánh Bao Mỹ Hương Thịt Heo 1C1M 640g (160gx4)",
+                "name": "Bánh Bao Thọ Phát KN Cua Xanh Vani 260g(65gx4)",
                 "quantity": 3,
-                "sapCode": "5000165",
-                "description": "Khớp hoàn toàn với yêu cầu: bao Mỹ Hương theo một cút muối 640g"
+                "sapCode": "5000095",
+                "description": "Khớp hoàn toàn với yêu cầu: bao kosan vani 260g"
+            }},
+            {{
+                "name": "Bánh bao Thọ Phát Không Nhân Dài Cuộn Vàng 300g-25gx12",
+                "quantity": 7,
+                "sapCode": "5000099",
+                "description": "Khớp hoàn toàn với yêu cầu: bao cục vàng 300g"
             }}
         ],
-        "message": "Tôi đã chọn 3 bánh bao Mỹ Hương thịt heo một cút muối cho bạn"
+        "productsError": [
+            {{
+                "name": "3 hoa cúc 500g",
+                "quantity": 8
+            }}
+        ]
     }}
 
+    LƯU Ý CUỐI CÙNG:
+    1. TUYỆT ĐỐI KHÔNG được chuyển đổi tên sản phẩm
+    2. TUYỆT ĐỐI KHÔNG dùng trọng lượng để đoán tên
+    3. CHỈ chấp nhận khi khớp 100% từ khóa
+    4. CHỈ lấy số lượng khi có từ "cái" hoặc số đứng riêng
+    5. PHẢI lấy đúng số lượng gần với từ "cái" nhất
+    6. Nếu không khớp -> ĐƯA VÀO productsError
+    7. TUYỆT ĐỐI KHÔNG thay thế sản phẩm không tìm thấy bằng sản phẩm khác
+    8. TUYỆT ĐỐI KHÔNG đoán màu sắc hoặc đặc điểm khác của sản phẩm
+    9. PHẢI kiểm tra thương hiệu (Mỹ Hương/Thọ Phát) trước khi tìm sản phẩm
+    10. PHẢI kiểm tra trọng lượng có tồn tại trong menu
+    11. TUYỆT ĐỐI KHÔNG đưa sản phẩm không khớp 100% vào products
+    12. TUYỆT ĐỐI KHÔNG đoán hoặc thay thế sản phẩm không tìm thấy
+    13. TUYỆT ĐỐI KHÔNG đưa sản phẩm không có trọng lượng phù hợp vào products
+    14. TUYỆT ĐỐI KHÔNG đưa sản phẩm không tìm thấy vào products
+    15. PHẢI tìm kiếm chính xác theo tên sản phẩm hoặc từ khóa trong menu
+    16. TUYỆT ĐỐI KHÔNG chấp nhận sản phẩm gần giống hoặc có tên khác
+    17. TUYỆT ĐỐI KHÔNG chấp nhận sản phẩm có trọng lượng khác
+    18. TUYỆT ĐỐI KHÔNG chấp nhận sản phẩm có thương hiệu khác
+    19. TUYỆT ĐỐI KHÔNG chấp nhận sản phẩm có đặc điểm khác
+    20. TUYỆT ĐỐI KHÔNG chấp nhận sản phẩm có từ khóa khác
     """
 
 def transcribe_audio(audio_data):

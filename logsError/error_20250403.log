@@ -21,3 +21,147 @@ Traceback (most recent call last):
 ValueError: Invalid format specifier
 
 
+2025-04-03 13:01:33
+Lỗi khi xử lý audio: Decoding failed. ffmpeg returned error code: 183
+
+Output from ffmpeg/avlib:
+
+ffmpeg version 7.1.1 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 15.0.0 (clang-1500.1.0.2.5)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/7.1.1_1 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      59. 39.100 / 59. 39.100
+  libavcodec     61. 19.101 / 61. 19.101
+  libavformat    61.  7.100 / 61.  7.100
+  libavdevice    61.  3.100 / 61.  3.100
+  libavfilter    10.  4.100 / 10.  4.100
+  libswscale      8.  3.100 /  8.  3.100
+  libswresample   5.  3.100 /  5.  3.100
+  libpostproc    58.  3.100 / 58.  3.100
+[matroska,webm @ 0x13b637dd0] EBML header parsing failed
+[cache @ 0x13b6381a0] Statistics, cache hits:0 cache misses:0
+[in#0 @ 0x13b637b80] Error opening input: Invalid data found when processing input
+Error opening input file cache:pipe:0.
+Error opening input files: Invalid data found when processing input
+
+
+2025-04-03 13:01:33
+Traceback (most recent call last):
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 208, in transcribe_audio
+    - TUYỆT ĐỐI KHÔNG bỏ qua sản phẩm
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/pydub/audio_segment.py", line 773, in from_file
+    raise CouldntDecodeError(
+pydub.exceptions.CouldntDecodeError: Decoding failed. ffmpeg returned error code: 183
+
+Output from ffmpeg/avlib:
+
+ffmpeg version 7.1.1 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 15.0.0 (clang-1500.1.0.2.5)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/7.1.1_1 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      59. 39.100 / 59. 39.100
+  libavcodec     61. 19.101 / 61. 19.101
+  libavformat    61.  7.100 / 61.  7.100
+  libavdevice    61.  3.100 / 61.  3.100
+  libavfilter    10.  4.100 / 10.  4.100
+  libswscale      8.  3.100 /  8.  3.100
+  libswresample   5.  3.100 /  5.  3.100
+  libpostproc    58.  3.100 / 58.  3.100
+[matroska,webm @ 0x13b637dd0] EBML header parsing failed
+[cache @ 0x13b6381a0] Statistics, cache hits:0 cache misses:0
+[in#0 @ 0x13b637b80] Error opening input: Invalid data found when processing input
+Error opening input file cache:pipe:0.
+Error opening input files: Invalid data found when processing input
+
+
+
+2025-04-03 13:01:33
+Chi tiết lỗi: Decoding failed. ffmpeg returned error code: 183
+
+Output from ffmpeg/avlib:
+
+ffmpeg version 7.1.1 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 15.0.0 (clang-1500.1.0.2.5)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/7.1.1_1 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      59. 39.100 / 59. 39.100
+  libavcodec     61. 19.101 / 61. 19.101
+  libavformat    61.  7.100 / 61.  7.100
+  libavdevice    61.  3.100 / 61.  3.100
+  libavfilter    10.  4.100 / 10.  4.100
+  libswscale      8.  3.100 /  8.  3.100
+  libswresample   5.  3.100 /  5.  3.100
+  libpostproc    58.  3.100 / 58.  3.100
+[matroska,webm @ 0x13b637dd0] EBML header parsing failed
+[cache @ 0x13b6381a0] Statistics, cache hits:0 cache misses:0
+[in#0 @ 0x13b637b80] Error opening input: Invalid data found when processing input
+Error opening input file cache:pipe:0.
+Error opening input files: Invalid data found when processing input
+
+
+2025-04-03 13:01:33
+Stack trace:
+
+2025-04-03 13:01:33
+Traceback (most recent call last):
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 321, in handle_transcribe
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 208, in transcribe_audio
+    - TUYỆT ĐỐI KHÔNG bỏ qua sản phẩm
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/pydub/audio_segment.py", line 773, in from_file
+    raise CouldntDecodeError(
+pydub.exceptions.CouldntDecodeError: Decoding failed. ffmpeg returned error code: 183
+
+Output from ffmpeg/avlib:
+
+ffmpeg version 7.1.1 Copyright (c) 2000-2025 the FFmpeg developers
+  built with Apple clang version 15.0.0 (clang-1500.1.0.2.5)
+  configuration: --prefix=/opt/homebrew/Cellar/ffmpeg/7.1.1_1 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags='-Wl,-ld_classic' --enable-ffplay --enable-gnutls --enable-gpl --enable-libaom --enable-libaribb24 --enable-libbluray --enable-libdav1d --enable-libharfbuzz --enable-libjxl --enable-libmp3lame --enable-libopus --enable-librav1e --enable-librist --enable-librubberband --enable-libsnappy --enable-libsrt --enable-libssh --enable-libsvtav1 --enable-libtesseract --enable-libtheora --enable-libvidstab --enable-libvmaf --enable-libvorbis --enable-libvpx --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxml2 --enable-libxvid --enable-lzma --enable-libfontconfig --enable-libfreetype --enable-frei0r --enable-libass --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libopenjpeg --enable-libspeex --enable-libsoxr --enable-libzmq --enable-libzimg --disable-libjack --disable-indev=jack --enable-videotoolbox --enable-audiotoolbox --enable-neon
+  libavutil      59. 39.100 / 59. 39.100
+  libavcodec     61. 19.101 / 61. 19.101
+  libavformat    61.  7.100 / 61.  7.100
+  libavdevice    61.  3.100 / 61.  3.100
+  libavfilter    10.  4.100 / 10.  4.100
+  libswscale      8.  3.100 /  8.  3.100
+  libswresample   5.  3.100 /  5.  3.100
+  libpostproc    58.  3.100 / 58.  3.100
+[matroska,webm @ 0x13b637dd0] EBML header parsing failed
+[cache @ 0x13b6381a0] Statistics, cache hits:0 cache misses:0
+[in#0 @ 0x13b637b80] Error opening input: Invalid data found when processing input
+Error opening input file cache:pipe:0.
+Error opening input files: Invalid data found when processing input
+
+
+
+2025-04-03 13:01:50
+Lỗi khi xử lý audio: 
+
+2025-04-03 13:01:50
+Traceback (most recent call last):
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 235, in transcribe_audio
+    "products": [
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 262, in recognize_legacy
+    return output_parser.parse(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 134, in parse
+    actual_result = self.convert_to_result(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 183, in convert_to_result
+    raise UnknownValueError()
+speech_recognition.exceptions.UnknownValueError
+
+
+2025-04-03 13:01:50
+Chi tiết lỗi: 
+
+2025-04-03 13:01:50
+Stack trace:
+
+2025-04-03 13:01:50
+Traceback (most recent call last):
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 321, in handle_transcribe
+  File "/Users/phungduong/Documents/Kido Documents/python/VoiceToJson/server.py", line 235, in transcribe_audio
+    "products": [
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 262, in recognize_legacy
+    return output_parser.parse(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 134, in parse
+    actual_result = self.convert_to_result(response_text)
+  File "/Users/phungduong/Documents/Kido Documents/Kido_Project/face-client/venv/lib/python3.10/site-packages/speech_recognition/recognizers/google.py", line 183, in convert_to_result
+    raise UnknownValueError()
+speech_recognition.exceptions.UnknownValueError
+
+
